@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Equivalência de Alimentos</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background: linear-gradient(to right, #87d45f, #efffc1);
+            color: #fff;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            color: #fff;
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        }
+        label {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            display: block;
+        }
+        select, input {
+            width: calc(100% - 22px);
+            margin: 10px 0;
+            padding: 12px;
+            font-size: 1em;
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+            background: #fff;
+            color: #333;
+        }
+        select:focus, input:focus {
+            outline: none;
+            border: 2px solid #87d45f;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+        #food-result {
+            margin-top: 20px;
+            font-weight: bold;
+            font-size: 1.2em;
+            text-align: center;
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <h1>Calculadora de Equivalência de Alimentos</h1>
+    <label for="food-group-select">Selecione o Grupo Alimentar:</label>
+    <select id="food-group-select">
+        <option value="carboidratos">Carboidratos</option>
+        <option value="proteinas">Proteínas</option>
+        <option value="gorduras">Gorduras</option>
+        <option value="frutas">Frutas</option>
+    </select>
+
+    <label for="food-select-1">Alimento A:</label>
+    <select id="food-select-1"></select>
+
+    <label for="food-quantity-1">Quantidade de Alimento A (em gramas ou unidades):</label>
+    <input type="number" id="food-quantity-1" min="0" max="1000" step="1" placeholder="Insira a quantidade">
+
+    <label for="food-select-2">Alimento B:</label>
+    <select id="food-select-2"></select>
+
+    <div id="food-result"></div>
+
+    <script>
+        const foodData = {
+            carboidratos: [
+                { name: 'Achocolatado em pó (30g)', value: 30 },
+                { name: 'Achocolatado em pó light (35g)', value: 35 },
+                { name: 'Abóbora crua (320g)', value: 320 },
+                { name: 'Abóbora cozida (260g)', value: 260 },
+                { name: 'Amaranto (120g)', value: 120 },
+                { name: 'Arroz integral cozido (100g)', value: 100 },
+                { name: 'Arroz integral cru (35g)', value: 35 },
+                { name: 'Aveia em flocos (30g)', value: 30 },
+                { name: 'Aveia em farelo (50g)', value: 50 },
+                { name: 'Batata baroa/mandioca cozida (150g)', value: 150 },
+                { name: 'Batata doce crua (105g)', value: 105 },
+                { name: 'Batata doce cozida (160g)', value: 160 },
+                { name: 'Batata inglesa cozida ou crua (145g)', value: 145 },
+                { name: 'Biscoito de arroz (30g)', value: 30 },
+                { name: 'Biscoito de maizena (25g)', value: 25 },
+                { name: 'Biscoito de polvilho (30g)', value: 30 },
+                { name: 'Flocos de arroz (35g)', value: 35 },
+                { name: 'Folha/papel de arroz (35g)', value: 35 },
+                { name: 'Fubá (35g)', value: 35 },
+                { name: 'Grão de bico cozido (75g)', value: 75 },
+                { name: 'Goiabada (50g)', value: 50 },
+                { name: 'Granola sem açúcar (30g)', value: 30 },
+                { name: 'Inhame cozido (90g)', value: 90 },
+                { name: 'Lentilha cozida (130g)', value: 130 },
+                { name: 'Leite condensado (40g)', value: 40 },
+                { name: 'Leite condensado light (45g)', value: 45 },
+                { name: 'Leite de arroz (260g)', value: 260 },
+                { name: 'Leite de aveia (300g)', value: 300 },
+                { name: 'Leite de soja (230g)', value: 230 },
+                { name: 'Mandioca cozida (100g)', value: 100 },
+                { name: 'Macarrão bifum (35g)', value: 35 }
+            ],
+            proteinas: [
+                { name: 'Acém (70g)', value: 70 },
+                { name: 'Atum cozido em lata ou grelhado (110g)', value: 110 },
+                { name: 'Atum cru (100g)', value: 100 },
+                { name: 'Camarão e outros frutos do mar (160g)', value: 160 },
+                { name: 'Clara de ovo (9 unidades)', value: 9 }, // Em unidades
+                { name: 'Clara de ovo de codorna (27 unidades)', value: 27 }, // Em unidades
+                { name: 'Claras pasteurizadas (330g)', value: 330 },
+                { name: 'Creme de ricota light com ou sem lactose (100g)', value: 100 },
+                { name: 'Coalhada desnatada com ou sem lactose (250g)', value: 250 },
+                { name: 'Coração de galinha (90g)', value: 90 },
+                { name: 'Coxão duro (70g)', value: 70 },
+                { name: 'Cupim (70g)', value: 70 },
+                { name: 'Frango coxa e sobrecoxa desossada (60g)', value: 60 },
+                { name: 'Picanha (70g)', value: 70 },
+                { name: 'Proteína texturizada da soja orgânica (PTS) crua ou hidratada (60g)', value: 60 },
+                { name: 'Proteína em pó, albumina, beef protein, clara de ovo em pó, colágeno, proteína vegetal, whey (40g)', value: 40 },
+                { name: 'Polenghi light com ou sem lactose (90g)', value: 90 },
+                { name: 'Polenghi Frescatino ultrafiltrado com ou sem lactose (70g)', value: 70 },
+                { name: 'Polenghi Frescatino ultrafiltrado light com ou sem lactose (100g)', value: 100 },
+                { name: 'Polenghi queijo frescal ultrafiltrado light com ou sem lactose (100g)', value: 100 },
+                { name: 'Queijo cottage de vaca ou de búfala com ou sem lactose (150g)', value: 150 },
+                { name: 'Queijo ricota fresca 12% de gordura ou menos com ou sem lactose (100g)', value: 100 },
+                { name: 'Queijo minas frescal light com ou sem lactose (85g)', value: 85 }
+            ],
+            gorduras: [
+                { name: 'Abacate/avocado (60g)', value: 60 },
+                { name: 'Amêndoas (15g)', value: 15 },
+                { name: 'Amendoim cru (15g)', value: 15 },
+                { name: 'Avelã (13g)', value: 13 },
+                { name: 'Azeite (10g)', value: 10 },
+                { name: 'Azeitona (75g)', value: 75 },
+                { name: 'Café termogênico (20g)', value: 20 },
+                { name: 'Castanhas (15g)', value: 15 },
+                { name: 'Chocolate 60% ou mais (15g)', value: 15 },
+                { name: 'Coalha com ou sem lactose (90g)', value: 90 },
+                { name: 'Coco em lascas/desidratado (15g)', value: 15 },
+                { name: 'Coco em pedaços (25g)', value: 25 },
+                { name: 'Creme de castanha de caju (30g)', value: 30 },
+                { name: 'Creme de leite com ou sem lactose (30g)', value: 30 },
+                { name: 'Creme de ricota original com ou sem lactose (45g)', value: 45 },
+                { name: 'Creme de queijo minas frescal com ou sem lactose (30g)', value: 30 },
+                { name: 'Creme de queijo minas frescal light com ou sem lactose (45g)', value: 45 },
+                { name: 'Cream cheese com ou sem lactose (30g)', value: 30 },
+                { name: 'Cream cheese light com ou sem lactose (40g)', value: 40 },
+                { name: 'Farinha de amêndoas (15g)', value: 15 },
+                { name: 'Farinha de coco (15g)', value: 15 },
+                { name: 'Farinha de linhaça (15g)', value: 15 },
+                { name: 'Gema ou ovo inteiro (1 unidade)', value: 1 }, // Em unidades
+                { name: 'Iogurte de 2 ou 3 ingredientes com ou sem lactose (140g)', value: 140 },
+                { name: 'Manteiga de coco (10g)', value: 10 },
+                { name: 'Manteiga ghee (10g)', value: 10 },
+                { name: 'Manteiga vegana (10g)', value: 10 },
+                { name: 'MCT ou TCM (10g)', value: 10 },
+                { name: 'Nozes (15g)', value: 15 },
+                { name: 'Óleo de coco (10g)', value: 10 },
+                { name: 'Ovo de codorna inteiro (5 unidades)', value: 5 }, // Em unidades
+                { name: 'Pasta de amendoim, avelã, amêndoas, castanha de caju, macadâmia (15g)', value: 15 },
+                { name: 'Paçoca (15g)', value: 15 },
+                { name: 'Pistache torrado (15g)', value: 15 },
+                { name: 'Polenguinho (35g)', value: 35 },
+                { name: 'Queijo brie (queijo de cabra) com ou sem lactose (25g)', value: 25 },
+                { name: 'Queijo burrata com ou sem lactose (30g)', value: 30 },
+                { name: 'Queijo coalho ou light com ou sem lactose (25g)', value: 25 },
+                { name: 'Queijo canastra com ou sem lactose (20g)', value: 20 }
+            ],
+            frutas: [
+                { name: 'Abacaxi (200g)', value: 200 },
+                { name: 'Açaí polpa pura sem açúcar (175g)', value: 175 },
+                { name: 'Acerola (310g)', value: 310 },
+                { name: 'Água de coco in natura (500ml)', value: 500 },
+                { name: 'Ameixa (210g)', value: 210 },
+                { name: 'Ameixa seca (40g)', value: 40 },
+                { name: 'Amora (230g)', value: 230 },
+                { name: 'Atemoia (100g)', value: 100 },
+                { name: 'Banana da terra (80g)', value: 80 },
+                { name: 'Banana (90g)', value: 90 },
+                { name: 'Geleia 100% fruta (55g)', value: 55 },
+                { name: 'Goiaba (150g)', value: 150 },
+                { name: 'Graviola (150g)', value: 150 },
+                { name: 'Jabuticaba (170g)', value: 170 },
+                { name: 'Jaca (105g)', value: 105 },
+                { name: 'Jambo (200g)', value: 200 },
+                { name: 'Kiwi (160g)', value: 160 },
+                { name: 'Laranja (210g)', value: 210 },
+                { name: 'Lichia (140g)', value: 140 },
+                { name: 'Maçã (190g)', value: 190 },
+                { name: 'Mamão (230g)', value: 230 },
+                { name: 'Manga (160g)', value: 160 },
+                { name: 'Maracujá (140g)', value: 140 },
+                { name: 'Melancia (330g)', value: 330 },
+                { name: 'Melão (340g)', value: 340 },
+                { name: 'Mexerica/tangerina (200g)', value: 200 },
+                { name: 'Morango (300g)', value: 300 },
+                { name: 'Nêspera (210g)', value: 210 }
+            ]
+        };
+
+        const groupSelect = document.getElementById('food-group-select');
+        const foodSelect1 = document.getElementById('food-select-1');
+        const foodSelect2 = document.getElementById('food-select-2');
+        const foodQuantity1 = document.getElementById('food-quantity-1');
+        const resultDiv = document.getElementById('food-result');
+
+        groupSelect.addEventListener('change', updateFoodOptions);
+        foodSelect1.addEventListener('change', calculateEquivalent);
+        foodSelect2.addEventListener('change', calculateEquivalent);
+        foodQuantity1.addEventListener('input', calculateEquivalent);
+
+        function updateFoodOptions() {
+            const group = groupSelect.value;
+            const options = foodData[group];
+            
+            foodSelect1.innerHTML = '';
+            foodSelect2.innerHTML = '';
+
+            options.forEach(food => {
+                const option1 = document.createElement('option');
+                option1.value = food.value;
+                option1.textContent = `${food.name}`;
+                foodSelect1.appendChild(option1);
+
+                const option2 = document.createElement('option');
+                option2.value = food.value;
+                option2.textContent = `${food.name}`;
+                foodSelect2.appendChild(option2);
+            });
+
+            calculateEquivalent();
+        }
+
+        function calculateEquivalent() {
+            const value1 = parseFloat(foodSelect1.value);
+            const value2 = parseFloat(foodSelect2.value);
+            const quantity1 = parseFloat(foodQuantity1.value) || 0;
+
+            if (value1 && value2 && quantity1 > 0) {
+                const equivalent = (quantity1 * value2) / value1;
+                resultDiv.textContent = `${quantity1} ${value1 === 1 ? 'unidade' : 'g'} de ${foodSelect1.options[foodSelect1.selectedIndex].textContent} é equivalente a ${equivalent.toFixed(2)} ${value2 === 1 ? 'unidade' : 'g'} de ${foodSelect2.options[foodSelect2.selectedIndex].textContent}.`;
+            } else {
+                resultDiv.textContent = '';
+            }
+        }
+
+        // Inicializar com o grupo de carboidratos selecionado
+        updateFoodOptions();
+    </script>
+</body>
+</html>
