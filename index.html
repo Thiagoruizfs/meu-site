@@ -228,12 +228,12 @@
             options.forEach(food => {
                 const option1 = document.createElement('option');
                 option1.value = food.value;
-                option1.textContent = `${food.name}`;
+                option1.textContent = food.name;
                 foodSelect1.appendChild(option1);
 
                 const option2 = document.createElement('option');
                 option2.value = food.value;
-                option2.textContent = `${food.name}`;
+                option2.textContent = food.name;
                 foodSelect2.appendChild(option2);
             });
 
