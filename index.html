@@ -5,53 +5,66 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calculadora de Equivalência de Alimentos</title>
     <style>
-        body {
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            background: linear-gradient(to right, #87d45f, #efffc1);
-            color: #fff;
-            max-width: 600px;
-            margin: 50px auto;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        }
-        h1 {
-            text-align: center;
-            font-size: 2.5em;
-            margin-bottom: 20px;
-            color: #fff;
-            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-        }
-        label {
-            font-size: 1.2em;
-            margin-bottom: 10px;
-            display: block;
-        }
-        select, input {
-            width: calc(100% - 22px);
-            margin: 10px 0;
-            padding: 12px;
-            font-size: 1em;
-            border: none;
-            border-radius: 8px;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-            background: #fff;
-            color: #333;
-        }
-        select:focus, input:focus {
-            outline: none;
-            border: 2px solid #87d45f;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-        }
-        #food-result {
-            margin-top: 20px;
-            font-weight: bold;
-            font-size: 1.2em;
-            text-align: center;
-            color: #ffffff;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-        }
-    </style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Montserrat:wght@400;700&display=swap');
+
+body {
+    font-family: 'Montserrat', sans-serif;
+    background: #ffffff; /* Fundo branco puro */
+    color: #1e3c72; /* Azul escuro para o texto */
+    max-width: 700px;
+    margin: 50px auto;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(30, 60, 114, 0.1); /* Azul claro */
+}
+
+h1 {
+    text-align: center;
+    font-size: 2.8em;
+    margin-bottom: 25px;
+    font-family: 'Orbitron', sans-serif;
+    color: #0a74da; /* Azul vibrante */
+    text-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
+}
+
+label {
+    font-size: 1.4em;
+    margin-bottom: 15px;
+    display: block;
+    color: #1e3c72; /* Azul escuro */
+}
+
+select, input {
+    width: calc(100% - 24px);
+    margin: 12px 0;
+    padding: 15px;
+    font-size: 1.2em;
+    border: 1px solid rgba(30, 60, 114, 0.3); /* Azul claro */
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    background: #f0f8ff; /* Azul muito claro */
+    color: #1e3c72; /* Texto azul escuro */
+    transition: all 0.3s ease;
+    font-family: 'Montserrat', sans-serif;
+}
+
+select:focus, input:focus {
+    outline: none;
+    border: 2px solid #0a74da; /* Azul vibrante */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+#food-result {
+    margin-top: 25px;
+    font-weight: bold;
+    font-size: 1.8em;
+    text-align: center;
+    color: #0a74da; /* Azul vibrante */
+    text-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+    font-family: 'Orbitron', sans-serif;
+}
+    </style>            
 </head>
 <body>
     <h1>Calculadora de Equivalência de Alimentos</h1>
@@ -291,10 +304,9 @@
             ]
         };
 
-        const groupSelect = document.getElementById('food-group-select');
+         const groupSelect = document.getElementById('food-group-select');
         const foodSelect1 = document.getElementById('food-select-1');
         const foodSelect2 = document.getElementById('food-select-2');
-        const quantityInput1 = document.getElementById('food-quantity-1');
         const resultDiv = document.getElementById('food-result');
 
         function populateSelects(group) {
@@ -311,28 +323,36 @@
             });
         }
 
-        function calculateEquivalent() {
-            const quantity1 = parseFloat(quantityInput1.value);
-            const foodValue1 = parseFloat(foodSelect1.value);
-            const foodValue2 = parseFloat(foodSelect2.value);
-            if (!isNaN(quantity1) && !isNaN(foodValue1) && !isNaN(foodValue2)) {
-                const result = (quantity1 * foodValue1) / foodValue2;
-                resultDiv.textContent = `A quantidade equivalente de Alimento B é: ${result.toFixed(2)}g`;
+        function displayEquivalent() {
+            const selectedFood1 = foodSelect1.options[foodSelect1.selectedIndex];
+            const selectedFood2 = foodSelect2.options[foodSelect2.selectedIndex];
+            const quantity1 = document.getElementById('food-quantity-1').value;
+
+            const value1 = parseFloat(selectedFood1.value);
+            const value2 = parseFloat(selectedFood2.value);
+
+            if (value1 && value2 && quantity1) {
+                const quantity1Number = parseFloat(quantity1);
+                const equivalentQuantity2 = (quantity1Number * value2) / value1;
+
+                resultDiv.textContent = `Alimento A: ${selectedFood1.text} (Quantidade: ${quantity1Number}g) é equivalente a Alimento B: ${selectedFood2.text} (Quantidade: ${equivalentQuantity2.toFixed(2)}g)`;
             } else {
-                resultDiv.textContent = 'Por favor, preencha todos os campos corretamente.';
+                resultDiv.textContent = 'Selecione ambos os alimentos e insira a quantidade de Alimento A.';
             }
         }
 
         groupSelect.addEventListener('change', () => {
             populateSelects(groupSelect.value);
+            displayEquivalent(); // Atualiza a equivalência ao trocar o grupo
         });
 
-        quantityInput1.addEventListener('input', calculateEquivalent);
-        foodSelect1.addEventListener('change', calculateEquivalent);
-        foodSelect2.addEventListener('change', calculateEquivalent);
+        foodSelect1.addEventListener('change', displayEquivalent);
+        foodSelect2.addEventListener('change', displayEquivalent);
+        document.getElementById('food-quantity-1').addEventListener('input', displayEquivalent);
 
         // Initialize with default group
         populateSelects(groupSelect.value);
+        displayEquivalent();
     </script>
 </body>
 </html>
